@@ -209,7 +209,15 @@ class MapData(BaseObject):  # nocov
                 installedMasksKey = map.stream.readUInt64()
                 recentMasksKey = map.stream.readUInt64()
                 archivedMasksKey = map.stream.readUInt64()
-
+            elif keyType == lskType.lskCustomEmojiKeys:
+                self._installedCustomEmojiKey = map.stream.readUint64()
+                self._featuredCustomEmojiKey = map.stream.readUint64()
+                self._archivedCustomEmojiKey = map.stream.readUint64()
+            elif keyType == lskType.lskSearchSuggestions:
+                self._searchSuggestionsKey = map.stream.readUInt64()
+            elif keyType == lskType.lskWebviewTokens:
+                self._webviewStorageTokenBots = map.stream.readBytes()
+                self._webviewStorageTokenOther = map.stream.readBytes()
             else:
                 logging.warning(f"Unknown key type in encrypted map: {keyType}")
 
@@ -1019,12 +1027,12 @@ class Account(BaseObject):
         dcId = DcId(ss.dc_id)
         userId = copy.UserId
         authKey = td.AuthKey(authKey, td.AuthKeyType.ReadFromFile, dcId)
-        
+
         if userId == None:
             await copy.connect()
             await copy.get_me()
             userId = copy.UserId
-            
+
         newAccount = None
 
         if owner != None:
